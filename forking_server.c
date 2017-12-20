@@ -27,7 +27,11 @@ int main() {
             exit(0);
         }
 	else{
-	  close(from_client);
+	  //char name[256];
+	  //sprintf(name,"%d",from_client);
+	  //close(from_client);
+	  //remove(name);
+	  //remove(buffer);
 	}
     }
     return 0;

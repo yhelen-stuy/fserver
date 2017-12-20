@@ -35,16 +35,21 @@ int server_connect(int from_client) {
     char pipe_name[HANDSHAKE_BUFFER_SIZE];
     read(from_client, pipe_name, sizeof(pipe_name));
     printf("[subserver] read pipe name\n");
+    
     int to_client = open(pipe_name, O_WRONLY);
     char buf[HANDSHAKE_BUFFER_SIZE] = ACK;
     write(to_client, buf, sizeof(buf));
     printf("[subserver] wrote " ACK "\n");
 
     read(from_client, buf, sizeof(buf));
+
+    remove(pipe_name);
+    
     if (strcmp(buf, ACK) == 0) {
         return to_client;
     }
 
+    
     return -1;
 }
 
@@ -81,7 +86,7 @@ int server_handshake(int *to_client) {
     //read for client
     read(from_client, buffer, sizeof(buffer));
     printf("[server] handshake received: %s\n", buffer);
-
+    
     return from_client;
 }
 
