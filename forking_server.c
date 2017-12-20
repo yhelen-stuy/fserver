@@ -2,8 +2,7 @@
 #include <signal.h>
 
 void process(char *s);
-// Sorry mr dw we modified this forgive us
-void subserver(int from_client, int to_client);
+void subserver(int from_client);
 
 static void sighandler(int signo) {
     if (signo == SIGINT) {
@@ -13,24 +12,29 @@ static void sighandler(int signo) {
 }
 
 int main() {
-    int to_client, from_client;
+    int from_client;
     char buffer[HANDSHAKE_BUFFER_SIZE];
+    signal(SIGINT,sighandler);
 
     while (1) {
         from_client = server_setup(buffer);
 
         int f = fork();
         if (f == 0) {
-            to_client = server_connect(from_client);
-            subserver(from_client, to_client);
+            
+            subserver(from_client);
 
             exit(0);
         }
+	else{
+	  close(from_client);
+	}
     }
     return 0;
 }
 
-void subserver(int from_client, int to_client) {
+void subserver(int from_client) {
+    int to_client = server_connect(from_client);
     char buffer[BUFFER_SIZE];
     while (read(from_client, buffer, sizeof(buffer))) {
         printf("[SERVER %d] received: %s\n", getpid(), buffer);
